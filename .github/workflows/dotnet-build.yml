@@ -2,35 +2,65 @@ name: .NET Console CI
 
 on:
   push:
-    branches: [main, master]
+    branches:
+      - main
+      - master
     paths:
-      - 'dotnet-console-app/**'
-      - '.github/workflows/dotnet-console.yml'
+      - 'Program.cs'
+      - 'dotnet-demo.csproj'
+      - '.github/workflows/dotnet-build.yml'
+
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - master
     paths:
-      - 'dotnet-console-app/**'
-      - '.github/workflows/dotnet-console.yml'
+      - 'Program.cs'
+      - 'dotnet-demo.csproj'
+      - '.github/workflows/dotnet-build.yml'
+
   workflow_dispatch:
 
 jobs:
   build-and-run:
-    runs-on: self-hosted
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - dotnet
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Verify runner
+        run: |
+          hostname
+          whoami
+          pwd
+
+      - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
 
+      - name: Verify .NET
+        run: |
+          dotnet --version
+          dotnet --info
+
       - name: Restore dependencies
-        run: dotnet restore dotnet-console-app/dotnet-console-app.csproj
+        run: dotnet restore dotnet-demo.csproj
 
       - name: Build application
-        run: dotnet build dotnet-console-app/dotnet-console-app.csproj --configuration Release --no-restore
+        run: |
+          dotnet build dotnet-demo.csproj \
+            --configuration Release \
+            --no-restore
 
       - name: Run application
-        run: dotnet run --project dotnet-console-app/dotnet-console-app.csproj --configuration Release --no-buildssssss
+        run: |
+          dotnet run \
+            --project dotnet-demo.csproj \
+            --configuration Release \
+            --no-build
