@@ -29,7 +29,6 @@ jobs:
       - self-hosted
       - linux
       - x64
-      - dotnet
 
     steps:
       - name: Checkout repository
